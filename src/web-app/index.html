@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Homework 1 - Cryptography</title>
+        <link rel="stylesheet" href="./main.css">
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    </head>
+    <div class="main">
+        <body>
+            <h1>Enhanced Caesar Cipher</h1>
+            <p>Fancy text here.</p>
+
+            <fieldset id="operation">
+                <legend>Select an operation.</legend>
+
+                <input type="radio" name="operation" id="encrypt" value="Encrypt" checked="true" onclick="changeOperation('encrypt')">
+                <label for="encrypt">Encrypt</label>
+
+                <input type="radio" name="operation" id="decrypt" value="Decrypt" onclick="changeOperation('decrypt')">
+                <label for="decrypt">Decrypt</label>
+
+                <input type="radio" name="operation" id="decipher" value="Decipher" onclick="changeOperation('decipher')">
+                <label for="decipher">Decipher</label>
+            </fieldset>
+
+            <div id="inputs"></div>
+
+            <script src="./main.js"></script>
+        </body>
+
+        <div><p id="solution"></p></div>
+        <div><p id="error"></p></div>
+        
+    </div>
+</html>
