@@ -1,4 +1,5 @@
 const prompt = require("prompt-sync")({ sigint: true });
+const fs = require("fs");
 
 function encrypt(plaintext, key)
 {
@@ -63,10 +64,9 @@ function encrypt(plaintext, key)
 
 function decrypt(ciphertext, key)
 {
-    console.log("");
-
     if (ciphertext == "" || ciphertext == undefined)
     {
+        console.log("");
         console.log("Error: Ciphertext cannot be empty.");
         return undefined;
     }
@@ -74,18 +74,21 @@ function decrypt(ciphertext, key)
     const string_regex = /[^a-zA-Z\s!?,\.]/;
     if (ciphertext.match(string_regex))
     {
+        console.log("");
         console.log("Error: Ciphertext can only contain letters, spaces, and basic punctuation.");
         return undefined;
     }
 
     if (typeof key != "number")
     {
+        console.log("");
         console.log("Error: Key must be a number.");
         return undefined;
     }
 
     if (key < 1 || key > 25)
     {
+        console.log("");
         console.log("Error: Key must be a number from 1 to 25.");
         return undefined;
     }
@@ -122,9 +125,152 @@ function decrypt(ciphertext, key)
     return plaintext;
 }
 
-function decipher()
+function decipher(ciphertext, filename)
 {
-    console.log("WIP: Not implemented yet.");
+    console.log("");
+
+    if (ciphertext == "" || ciphertext == undefined)
+    {
+        console.log("Error: Ciphertext cannot be empty.");
+        return undefined;
+    }
+
+    const string_regex = /[^a-zA-Z\s!?,\.]/;
+    if (ciphertext.match(string_regex))
+    {
+        console.log("Error: Ciphertext can only contain letters, spaces, and basic punctuation.");
+        return undefined;
+    }
+
+    if (!fs.existsSync(filename))
+    {
+        console.log("Error: File does not exist: " + filename);
+        return undefined;
+    }
+
+    const fileData = fs.readFileSync(filename, "utf8");
+    let plaintext = undefined;
+    let key = undefined;
+    for (let i = 1; i < 25; i++)
+    {
+        const crackedText = decrypt(ciphertext, i);
+        const crackedWords = crackedText.replaceAll(/[^a-zA-Z\s]/g, "").split(" ");
+        const matchedWords = crackedWords.filter(word => fileData.includes(word));
+
+        if (crackedWords.length != matchedWords.length) continue;
+        key = i;
+        plaintext = crackedText;
+
+        break;
+    }
+
+    return [plaintext, key];
+}
+
+function option1()
+{
+    console.log("\n\n");
+    console.log("Selected operation: Encrypt");
+
+    let ciphertext = "";
+    do {
+        if (ciphertext === undefined)
+        {
+            console.log("");
+            const try_again = prompt("Do you want to try again? Input (y/n): ");
+            switch (try_again.toLowerCase()) {
+                case "y":
+                    break;
+                case "n":
+                default:
+                    ciphertext = "Failed.";
+                    continue;
+            }
+        }
+
+        console.log("");
+
+        const plaintext = prompt("Input plaintext: ");
+        const key = Number(prompt("Input key: "));
+        ciphertext = encrypt(plaintext, key);
+    } while (ciphertext === undefined);
+
+    console.log("");
+    console.log("Encrypted message:");
+    console.log(ciphertext);
+}
+
+function option2()
+{
+    console.log("\n\n");
+    console.log("Selected operation: Decrypt");
+
+    let plaintext = "";
+    do {
+        if (plaintext === undefined)
+        {
+            console.log("");
+            const try_again = prompt("Do you want to try again? Input (y/n): ");
+            switch (try_again.toLowerCase()) {
+                case "y":
+                    break;
+                case "n":
+                default:
+                    plaintext = "Failed.";
+                    continue;
+            }
+        }
+
+        console.log("");
+
+        const ciphertext = prompt("Input ciphertext: ");
+        const key = Number(prompt("Input key: "));
+        plaintext = decrypt(ciphertext, key);
+    } while (plaintext === undefined);
+
+    console.log("");
+    console.log("Decrypted message:");
+    console.log(plaintext);
+}
+
+function option3()
+{
+    console.log("\n\n");
+    console.log("Selected operation: Decipher");
+
+    let plaintext = [];
+    do {
+        if (plaintext === undefined)
+        {
+            console.log("");
+            const try_again = prompt("Do you want to try again? Input (y/n): ");
+            switch (try_again.toLowerCase()) {
+                case "y":
+                    break;
+                case "n":
+                default:
+                    plaintext = "Failed.";
+                    continue;
+            }
+        }
+
+        console.log("");
+
+        const ciphertext = prompt("Input ciphertext: ");
+        const filename = prompt("Input filename: ");
+        plaintext = decipher(ciphertext, filename);
+    } while (plaintext === undefined);
+
+    console.log("");
+    if (plaintext[0] == undefined)
+    {
+        console.log("Could not decipher message.");
+    } else
+    {
+        console.log("Deciphered message:");
+        console.log(plaintext);
+    }
+    
 }
 
 function main()
@@ -147,71 +293,13 @@ function main()
         const operation = Number(prompt("Input selection: "));
         switch (operation) {
             case 1:
-                console.log("\n\n");
-                console.log("Selected operation: Encrypt");
-
-                let ciphertext = "";
-                do {
-                    if (ciphertext === undefined)
-                    {
-                        console.log("");
-                        const try_again = prompt("Do you want to try again? Input (y/n): ");
-                        switch (try_again.toLowerCase()) {
-                            case "y":
-                                break;
-                            case "n":
-                            default:
-                                ciphertext = "Failed.";
-                                continue;
-                        }
-                    }
-
-                    console.log("");
-
-                    const plaintext = prompt("Input plaintext: ");
-                    const key = Number(prompt("Input key: "));
-                    ciphertext = encrypt(plaintext, key);
-                } while (ciphertext === undefined);
-
-                console.log("");
-                console.log("Encrypted message:");
-                console.log(ciphertext);
-
+                option1();
                 break;
             case 2:
-                console.log("\n\n");
-                console.log("Selected operation: Decrypt");
-
-                let plaintext = "";
-                do {
-                    if (plaintext === undefined)
-                    {
-                        console.log("");
-                        const try_again = prompt("Do you want to try again? Input (y/n): ");
-                        switch (try_again.toLowerCase()) {
-                            case "y":
-                                break;
-                            case "n":
-                            default:
-                                plaintext = "Failed.";
-                                continue;
-                        }
-                    }
-
-                    console.log("");
-
-                    const ciphertext = prompt("Input ciphertext: ");
-                    const key = Number(prompt("Input key: "));
-                    plaintext = decrypt(ciphertext, key);
-                } while (plaintext === undefined);
-
-                console.log("");
-                console.log("Decrypted message:");
-                console.log(plaintext);
-                
+                option2();                
                 break;
             case 3:
-
+                option3();                
                 break;
             case 9:
                 console.log("\n\n");
